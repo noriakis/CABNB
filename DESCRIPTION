@@ -1,0 +1,16 @@
+Package: CABNB
+Title: Compositionality aware bias corrected negative binomial model
+Version: 0.1.0
+Authors@R: person("Noriaki", "Sato",
+    role = c("aut", "cre"),
+    email = "nori@hgc.jp")
+Description: Differential abundance analysis for microbiome count
+    data using a compositionality-aware, bias-corrected negative-binomial model.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports: MASS, stats
+Depends: 
+    R (>= 3.5)
+LazyData: true
