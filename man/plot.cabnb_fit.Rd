@@ -2,51 +2,56 @@
 % Please edit documentation in R/plot.R
 \name{plot.cabnb_fit}
 \alias{plot.cabnb_fit}
-\title{Plot abundance and prevalence effects from a CAB-NB fit class object}
+\title{Plot abundance and prevalence effects from a CABNB fit}
 \usage{
 \method{plot}{cabnb_fit}(
   x,
+  inference = c("auto", "information", "standard"),
   alpha = 0.05,
-  lfc = c("raw", "shrunken"),
+  lfc = c("shrunken", "raw"),
   label = FALSE,
   label_top = 10,
-  legend_position = "bottomright",
   colors = c(none = "#777777", abundance = "#B33F62", prevalence = "#2F6F9F",
-    `abundance+prevalence` = "#7A4EAB"),
+    `abundance+prevalence` = "#7A4EAB", `information-any` = "#D89000"),
   pch = 19,
   cex = 1.1,
   xlab = NULL,
   ylab = "Prevalence log odds ratio",
   main = NULL,
+  legend_position = "bottomright",
   ...
 )
 }
 \arguments{
 \item{x}{A \code{cabnb_fit} object.}
 
-\item{alpha}{FDR threshold used to colour taxa.}
+\item{inference}{Use \code{"information"}, conventional \code{"standard"}
+component q-values, or \code{"auto"} to prefer information-filtered results.}
 
-\item{lfc}{Plot \code{"raw"} or \code{"shrunken"} log fold changes.}
+\item{alpha}{Component FDR threshold used to colour taxa.}
 
-\item{label}{Label significant taxa.}
+\item{lfc}{Plot \code{"shrunken"} or \code{"raw"} log fold changes.}
 
-\item{label_top}{Maximum number of significant taxa to label.}
+\item{label}{Label discovered taxa.}
 
-\item{legend_position}{legend position.}
+\item{label_top}{Maximum number of taxa to label.}
 
-\item{colors}{Named colours for \code{none}, \code{abundance}, \code{prevalence}, and
-\code{abundance+prevalence}.}
+\item{colors}{Named colours for \code{none}, \code{abundance}, \code{prevalence},
+\code{abundance+prevalence}, and \code{information-any}.}
 
 \item{pch, cex}{Point symbol and size.}
 
 \item{xlab, ylab, main}{Axis labels and title.}
 
+\item{legend_position}{Legend position.}
+
 \item{...}{Arguments passed to \code{\link[graphics:plot.default]{graphics::plot.default()}}.}
 }
 \value{
-Invisibly, the plotted results with \code{plot_lfc} and \code{plot_signal}.
+Invisibly, the plotted result rows with \code{plot_lfc} and
+\code{plot_signal} columns.
 }
 \description{
-Plot abundance log fold changes against prevalence log odds
-ratios and colours taxa by their FDR-significant signal type.
+Plots abundance log fold changes against prevalence log odds ratios. When
+available, information-filtered results are used by default.
 }

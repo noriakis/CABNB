@@ -74,8 +74,12 @@
     se <- fit$se[ridx]
     converged <- fit$converged
   } else {
-    dat <- data.frame(presence = presence, zdesign, check.names = FALSE)
-    form <- stats::as.formula(paste("presence ~ 0 +", paste(colnames(zdesign), collapse = " + ")))
+    glm_design <- zdesign
+    colnames(glm_design) <- paste0("x", seq_len(ncol(glm_design)))
+    dat <- data.frame(presence = presence, glm_design, check.names = FALSE)
+    form <- stats::as.formula(paste(
+      "presence ~ 0 +", paste(colnames(glm_design), collapse = " + ")
+    ))
     fit <- tryCatch(
       suppressWarnings(stats::glm(
         form,
@@ -88,16 +92,15 @@
     if (inherits(fit, "error")) {
       return(out)
     }
-    sm <- tryCatch(suppressWarnings(summary(fit)), error = function(e) NULL)
-    if (is.null(sm) || is.null(sm$coefficients)) {
+    summary_fit <- tryCatch(
+      suppressWarnings(summary(fit)), error = function(e) NULL
+    )
+    if (is.null(summary_fit) || is.null(summary_fit$coefficients) ||
+        fit$rank < ncol(zdesign)) {
       return(out)
     }
-    ridx_glm <- match(cname, rownames(sm$coefficients))
-    if (is.na(ridx_glm)) {
-      return(out)
-    }
-    beta <- sm$coefficients[ridx_glm, "Estimate"]
-    se <- sm$coefficients[ridx_glm, "Std. Error"]
+    beta <- summary_fit$coefficients[ridx, "Estimate"]
+    se <- summary_fit$coefficients[ridx, "Std. Error"]
     converged <- isTRUE(fit$converged)
   }
   out["logOR"] <- beta

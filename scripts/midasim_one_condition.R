@@ -113,7 +113,7 @@
 #' @return A list containing settings, counts, metadata, truth, fit, and metrics.
 cabnb_run_midasim_one_condition <- function(
     template = c("throat", "ibd", "vaginal"), n_per_group = 40, n_taxa = 80,
-    da_prop = 0.10, prevalence_prop = 0.05, effect_log_fc = log(2), prevalence_drop = 0.35,
+    da_prop = 0.10, prevalence_prop = 0, effect_log_fc = log(2), prevalence_drop = 0,
     alpha = 0.05, seed = 1, cabnb_args = list(), save_prefix = NULL) {
   if (!requireNamespace("MIDASim", quietly = TRUE)) {
     stop("MIDASim is required. Install it before running this script.", call. = FALSE)

@@ -6,56 +6,79 @@
 \usage{
 cabnb_fit(
   counts,
-  metadata,
+  metadata = NULL,
   formula = ~group,
-  coef = 2,
-  library_size = rowSums(counts),
-  min_prev = 0.05,
-  min_total = 10,
-  initial_bias = "median_ratio",
+  coef = NULL,
+  library_size = NULL,
+  min_prevalence = 0.05,
+  min_total_count = 10,
+  min_mean_count = 0,
+  initial_bias = c("median_ratio", "zero"),
   maxit_comp = 3,
   comp_tol = 0.001,
-  dispersion_shrink = TRUE,
+  dispersion_shrink = FALSE,
+  lfc_shrink = TRUE,
   empirical_null = TRUE,
-  scale_floor = 1.25,
+  empirical_null_trim = 0.2,
+  empirical_null_scale_floor = 1.25,
+  p_adjust_method = "BH",
   alpha = 0.05,
+  zero_model = TRUE,
   zero_depth_adjust = TRUE,
   zero_method = c("ridge", "glm"),
   zero_ridge_lambda = 1,
   glm_maxit = 50,
   prevalence_empirical_null = TRUE,
-  prevalence_empirical_null_trim = 0.2,
-  prevalence_empirical_scale_floor = 1.25
+  prevalence_empirical_scale_floor = 1.25,
+  information_filter = TRUE,
+  information_min_effective_n = 10,
+  information_max_sample_fraction = 0.35,
+  information_min_prevalence = 0,
+  information_decision_level = 0.2,
+  verbose = FALSE
 )
 }
 \arguments{
-\item{counts}{Samples-by-taxa count matrix.}
+\item{counts}{Numeric samples-by-taxa count matrix.}
 
 \item{metadata}{Sample metadata used by \code{formula}.}
 
 \item{formula}{Model formula; default \code{~ group}.}
 
-\item{coef}{Coefficient name or column index to test.}
+\item{coef}{Coefficient name or design-matrix column index to test. By
+default, the last non-intercept coefficient is used.}
 
-\item{library_size}{Sequencing depth per sample.}
+\item{library_size}{Optional sequencing depth per sample. Defaults to row
+sums of \code{counts}.}
 
-\item{min_prev}{Minimum taxon prevalence for filtering.}
+\item{min_prevalence}{Minimum taxon prevalence for model fitting.}
 
-\item{min_total}{Minimum total taxon count for filtering.}
+\item{min_total_count}{Minimum total taxon count for model fitting.}
+
+\item{min_mean_count}{Minimum mean taxon count for model fitting.}
 
 \item{initial_bias}{Bias initialization: \code{"median_ratio"} or \code{"zero"}.}
 
 \item{maxit_comp}{Maximum compositional-bias iterations.}
 
-\item{comp_tol}{Convergence tolerance for bias updates.}
+\item{comp_tol}{Convergence tolerance for compositional-bias updates.}
 
-\item{dispersion_shrink}{Shrink NB dispersions toward their trend.}
+\item{dispersion_shrink}{Shrink NB dispersions toward their mean trend.}
 
-\item{empirical_null}{Apply empirical-null abundance calibration.}
+\item{lfc_shrink}{Apply normal-prior shrinkage to reported log fold changes.}
 
-\item{scale_floor}{Minimum abundance empirical-null scale.}
+\item{empirical_null}{Apply robust empirical-null calibration to abundance
+Wald statistics.}
 
-\item{alpha}{FDR threshold for signal classification.}
+\item{empirical_null_trim}{Upper tail fraction excluded from calibration.}
+
+\item{empirical_null_scale_floor}{Minimum abundance empirical-null scale.}
+
+\item{p_adjust_method}{Multiple-testing adjustment method.}
+
+\item{alpha}{FDR threshold used for component signal classification.}
+
+\item{zero_model}{Fit the prevalence model on presence/absence indicators.}
 
 \item{zero_depth_adjust}{Adjust prevalence models for sequencing depth.}
 
@@ -65,17 +88,33 @@ cabnb_fit(
 
 \item{glm_maxit}{Maximum model-fitting iterations.}
 
-\item{prevalence_empirical_null}{Apply empirical-null prevalence calibration.}
-
-\item{prevalence_empirical_null_trim}{Tail fraction trimmed during calibration.}
+\item{prevalence_empirical_null}{Apply robust empirical-null prevalence
+calibration.}
 
 \item{prevalence_empirical_scale_floor}{Minimum prevalence empirical-null scale.}
+
+\item{information_filter}{Apply the group-blind information filter.}
+
+\item{information_min_effective_n}{Minimum pooled count-support effective
+sample size, \code{(sum(y)^2 / sum(y^2))}.}
+
+\item{information_max_sample_fraction}{Maximum fraction of a taxon's total
+count contributed by one sample.}
+
+\item{information_min_prevalence}{Minimum pooled prevalence.}
+
+\item{information_decision_level}{Calibrated cutoff for the filtered Any
+q-value. This is not a conventional FDR guarantee.}
+
+\item{verbose}{Report taxa that fail model fitting.}
 }
 \value{
-A \code{cabnb_fit} object, taxon-level results are in \verb{$results}.
+A \code{cabnb_fit} object. Taxon-level results are in \verb{$results}.
 }
 \description{
-Fits abundance and prevalence models to microbiome counts.
+Fits a compositionality-aware negative-binomial abundance model, an
+optional prevalence model, and a group-blind information filter. Counts
+must have samples in rows and taxa in columns.
 }
 \examples{
 data(cabnb_example_counts)
@@ -86,5 +125,6 @@ fit <- cabnb_fit(
   formula = ~ group,
   coef = "grouptreatment"
 )
+fit
 head(fit$results)
 }
