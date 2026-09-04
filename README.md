@@ -76,3 +76,8 @@ An R Jupyter notebook using the Kostic colorectal cancer count data from
 Run it from the repository root so that `devtools::load_all(".")` resolves the
 local package. The notebook requires an R kernel and the `microbiomeMarker`,
 `phyloseq`, `ggplot2`, `ggrepel`, and `knitr` packages.
+
+
+## Reference
+
+- Kostic, A. D. et al. (2012). Genomic analysis identifies association of *Fusobacterium* with colorectal carcinoma. *Genome Research*, 22(2), 292–298.
